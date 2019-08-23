@@ -1,2 +1,0 @@
-# ReactTimeTable
-Created with CodeSandbox
