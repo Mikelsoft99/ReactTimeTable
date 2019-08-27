@@ -2,3 +2,44 @@
   font-family: sans-serif;
   text-align: center;
 }
+
+.timetable {
+}
+.timetable--verticalscroll {
+}
+.timetable--verticalscroll > div {
+}
+
+.timetable__day {
+  float: left;
+  border-right: solid 2px black;
+}
+.timetable__day:first-child {
+  border-left: solid 2px black;
+}
+.timetable__day__name {
+  text-align: left;
+}
+.timetable__day__content {
+}
+
+.timetable__section {
+  border-right: solid 2px grey;
+  float: left;
+}
+.timetable__section:last-child {
+  border: none;
+}
+.timetable__section__name {
+  text-align: left;
+}
+.timetable__section__content {
+}
+
+.timetable__timespan {
+  border-left: solid 1px grey;
+  float: left;
+}
+.timetable__timespan:first-child {
+  border: none;
+}
