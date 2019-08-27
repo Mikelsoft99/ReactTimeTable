@@ -1,5 +1,7 @@
 import * as React from "react";
 import * as DateTimeHelpers from "./helpers/datetime";
+import * as Api from "./interface/data";
+import * as ExampleData from "./example/apiData";
 
 // global height
 let globalHeight: number = 400;
@@ -10,38 +12,53 @@ let globalHeaderHeight: number = 20;
     TimeTable TimeSpan 
  */
 interface ITimeTableTimeSpanProps {
-  start: Date;
-  end: Date;
+  timespans: Api.ITimeSpan[];
 }
 class TimeTableTimeSpan extends React.Component<ITimeTableTimeSpanProps, {}> {
   render() {
-    let startPosition: number = DateTimeHelpers.CalculatePosition(
-      globalHeight,
-      this.props.start
-    );
-    let endPosition: number = DateTimeHelpers.CalculatePosition(
-      globalHeight,
-      this.props.end
-    );
-
     let styleWrapper: React.CSSProperties = {
       position: "relative",
       height: globalHeight,
       width: globalWidth
     };
-
     let styleTimeSpan: React.CSSProperties = {
       position: "absolute",
-      top: startPosition,
+      top: 0, // startPosition,
       left: 0,
-      height: endPosition - startPosition,
+      height: 0, // endPosition - startPosition,
       width: "100%",
       backgroundColor: "blue"
     };
 
+    let bars = null;
+    if (this.props.timespans != null) {
+      bars = this.props.timespans.map(n => {
+        let startPosition: number = DateTimeHelpers.CalculatePosition(
+          globalHeight,
+          n.start
+        );
+        let endPosition: number = DateTimeHelpers.CalculatePosition(
+          globalHeight,
+          n.end
+        );
+
+        let currentStyle: React.CSSProperties = Object.assign(
+          {},
+          styleTimeSpan
+        );
+        currentStyle.top = startPosition;
+        currentStyle.height = endPosition - startPosition;
+        currentStyle.backgroundColor = n.color;
+
+        return (
+          <div className="timetable__timespan__bar" style={currentStyle} />
+        );
+      });
+    }
+
     return (
       <div className="timetable__timespan" style={styleWrapper}>
-        <div className="timetable__timespan__bar" style={styleTimeSpan} />
+        {bars}
       </div>
     );
   }
@@ -172,55 +189,38 @@ class TimeTableContainers extends React.Component {
   }
 }
 
-export class TimeTable extends React.Component {
+interface ITimeTableProps {
+  d: Api.IData;
+}
+export class TimeTable extends React.Component<ITimeTableProps, {}> {
   render() {
-    return (
-      <TimeTableContainers>
-        <TimeTableDay DayName="MO">
-          <TimeTableSection SectionName="W">
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 10, 25, 0, 0)}
-              end={new Date(0, 0, 0, 12, 15, 0, 0)}
-            />
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 8, 0, 0, 0)}
-              end={new Date(0, 0, 0, 12, 0, 0, 0)}
-            />
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 15, 0, 0, 0)}
-              end={new Date(0, 0, 0, 18, 0, 0, 0)}
-            />
-          </TimeTableSection>
-          <TimeTableSection SectionName="U">
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 8, 0, 0, 0)}
-              end={new Date(0, 0, 0, 16, 0, 0, 0)}
-            />
-          </TimeTableSection>
-        </TimeTableDay>
-        <TimeTableDay DayName="DI">
-          <TimeTableSection SectionName="W">
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 10, 25, 0, 0)}
-              end={new Date(0, 0, 0, 12, 15, 0, 0)}
-            />
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 8, 0, 0, 0)}
-              end={new Date(0, 0, 0, 12, 0, 0, 0)}
-            />
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 15, 0, 0, 0)}
-              end={new Date(0, 0, 0, 18, 0, 0, 0)}
-            />
-          </TimeTableSection>
-          <TimeTableSection SectionName="U">
-            <TimeTableTimeSpan
-              start={new Date(0, 0, 0, 10, 0, 0, 0)}
-              end={new Date(0, 0, 0, 17, 0, 0, 0)}
-            />
-          </TimeTableSection>
-        </TimeTableDay>
-      </TimeTableContainers>
-    );
+    let renderData = null;
+    if (this.props.d != null) {
+      renderData = this.props.d.data.map((a, i) => {
+        // section
+        let sections = null;
+        if (a.sections != null) {
+          sections = a.sections.map((b, ib) => {
+            let subsections = null;
+            // subsections
+            if (b.subsection != null) {
+              subsections = b.subsection.map(c => {
+                return <TimeTableTimeSpan timespans={c.timeSpan} />;
+              });
+            }
+
+            return (
+              <TimeTableSection SectionName={b.sectionName}>
+                {subsections}
+              </TimeTableSection>
+            );
+          });
+        }
+
+        return <TimeTableDay DayName={a.dayName}>{sections}</TimeTableDay>;
+      });
+    }
+
+    return <TimeTableContainers>{renderData}</TimeTableContainers>;
   }
 }
