@@ -4,8 +4,10 @@
 }
 
 .timetable {
+  text-align: left;
 }
 .timetable--verticalscroll {
+  display: inline-block;
 }
 .timetable--verticalscroll > div {
 }

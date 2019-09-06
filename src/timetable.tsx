@@ -204,8 +204,13 @@ export class TimeTable extends React.Component<ITimeTableProps, {}> {
             let subsections = null;
             // subsections
             if (b.subsection != null) {
-              subsections = b.subsection.map(c => {
-                return <TimeTableTimeSpan timespans={c.timeSpan} />;
+              subsections = b.subsection.map((c, ic) => {
+                return (
+                  <TimeTableTimeSpan
+                    key={ib + "ts" + ic}
+                    timespans={c.timeSpan}
+                  />
+                );
               });
             }
 
